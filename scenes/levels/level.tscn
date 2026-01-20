@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=4 uid="uid://b1b8ydwf57nlh"]
+[gd_scene load_steps=11 format=3 uid="uid://b1b8ydwf57nlh"]
 
 [ext_resource type="Texture2D" uid="uid://bl7bnn6bsu0y2" path="res://assets/tilesets/iso_tile_export.png" id="1_377w7"]
 [ext_resource type="PackedScene" uid="uid://bb5fudop6p5x6" path="res://scenes/characters/Kiro/kiro.tscn" id="2_bovvr"]
@@ -9,6 +9,16 @@ script/source = "extends Control
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	$Label.text = 'FPS: ' + str(Engine.get_frames_per_second())
+"
+
+[sub_resource type="GDScript" id="GDScript_bovvr"]
+script/source = "extends Node
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	var cursor_image = load(\"res://assets/cursor/01.png\")
+	
+	Input.set_custom_mouse_cursor(cursor_image, Input.CURSOR_ARROW, Vector2.ZERO)
 "
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_bovvr"]
@@ -137,13 +147,13 @@ texture_region_size = Vector2i(32, 32)
 4:4/0 = 0
 4:4/0/texture_origin = Vector2i(0, -7)
 4:5/0 = 0
-4:5/0/texture_origin = Vector2i(0, -7)
+4:5/0/texture_origin = Vector2i(0, -11)
 5:5/0 = 0
-5:5/0/texture_origin = Vector2i(0, -7)
+5:5/0/texture_origin = Vector2i(0, -11)
 6:5/0 = 0
-6:5/0/texture_origin = Vector2i(0, -7)
+6:5/0/texture_origin = Vector2i(0, -11)
 7:5/0 = 0
-7:5/0/texture_origin = Vector2i(0, -7)
+7:5/0/texture_origin = Vector2i(0, -11)
 8:5/0 = 0
 8:5/0/texture_origin = Vector2i(0, -7)
 9:5/0 = 0
@@ -351,27 +361,51 @@ texture_region_size = Vector2i(32, 32)
 
 [sub_resource type="TileSet" id="TileSet_bovvr"]
 tile_shape = 1
+tile_layout = 4
 tile_size = Vector2i(32, 16)
+physics_layer_0/collision_layer = 1
 navigation_layer_0/layers = 1
 sources/0 = SubResource("TileSetAtlasSource_377w7")
 
+[sub_resource type="GDScript" id="GDScript_b2cq8"]
+script/source = "extends TileMapLayer
+
+var noise = FastNoiseLite.new()
+var chunk_size = 16
+var render_distance = 3
+var loaded_chunks = {}
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	for x in range(-50, 50):
+		for y in range(-50, 50):
+				set_cell(Vector2(x,y), 0, Vector2(randi_range(0, 11), 1))
+"
+
 [node name="Level" type="Node2D"]
 
-[node name="ShowFPS" type="Control" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ShowFPS" type="Control" parent="CanvasLayer"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 script = SubResource("GDScript_ftxyw")
+metadata/_edit_use_anchors_ = true
 
-[node name="Label" type="Label" parent="ShowFPS"]
+[node name="Label" type="Label" parent="CanvasLayer/ShowFPS"]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
+metadata/_edit_use_anchors_ = true
+
+[node name="MouseCursor" type="Node" parent="CanvasLayer"]
+script = SubResource("GDScript_bovvr")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 y_sort_enabled = true
-tile_map_data = PackedByteArray("AAAAAAMAAAAIAAEAAAABAAIAAAAAAAEAAAABAAEAAAAAAAEAAAACAAIAAAAAAAEAAAACAAMAAAAIAAEAAAACAAQAAAAAAAEAAAACAAUAAAAAAAEAAAACAAYAAAAAAAEAAAABAAcAAAAAAAEAAAABAAYAAAAIAAEAAAABAAUAAAAAAAEAAAABAAQAAAAAAAEAAAABAAMAAAAAAAEAAAAAAP7/AAAEAAEAAAAAAP//AAAIAAEAAAAAAAAAAAAIAAEAAAD//wEAAAAEAAEAAAD//wIAAAAEAAEAAAD//wMAAAAEAAEAAAD//wQAAAAEAAEAAAD//wUAAAAEAAEAAAAAAAYAAAAEAAEAAAAAAAcAAAAIAAEAAAAAAAgAAAAEAAEAAAD//wkAAAAEAAEAAAAAAAoAAAAEAAEAAAD//wsAAAAEAAEAAAD//woAAAAEAAEAAAAAAAwAAAAEAAEAAAAAAAsAAAAEAAEAAAABAAwAAAAEAAEAAAABAA0AAAAEAAEAAAACAA4AAAAEAAEAAAADAA4AAAAEAAEAAAAEAA4AAAAEAAEAAAAEAA0AAAAEAAEAAAAEAAwAAAAEAAEAAAAEAAsAAAAEAAEAAAAEAAoAAAAHAAIAAAAEAAkAAAAEAAEAAAAFAAgAAAAEAAEAAAAFAAcAAAAEAAEAAAAFAAYAAAAEAAEAAAAFAAUAAAAEAAEAAAAFAAQAAAAEAAEAAAAFAAMAAAAEAAEAAAAGAAIAAAAEAAEAAAAFAAEAAAAEAAEAAAABAP7/AAAIAAEAAAABAP//AAAIAAEAAAACAP7/AAAFAAEAAAACAP//AAAEAAEAAAADAP7/AAAEAAEAAAADAP3/AAAFAAEAAAAEAP7/AAAEAAEAAAAEAP3/AAAEAAEAAAAFAP7/AAAEAAEAAAAFAP//AAAEAAEAAAAFAAAAAAAEAAEAAAAFAAIAAAAEAAEAAAAEAAEAAAAEAAEAAAADAAoAAAAHAAIAAAACAAkAAAAIAAEAAAACAAoAAAAIAAEAAAACAAgAAAAIAAEAAAACAAcAAAAIAAEAAAADAAYAAAAIAAEAAAAEAAYAAAAIAAEAAAADAAcAAAAHAAIAAAADAAgAAAAHAAIAAAADAAUAAAAIAAEAAAAEAAQAAAAIAAEAAAADAAMAAAAIAAEAAAADAAIAAAAIAAEAAAADAAEAAAAIAAEAAAADAAAAAAAIAAEAAAADAP//AAAIAAEAAAAEAAIAAAAIAAEAAAAEAAUAAAAIAAEAAAADAAQAAAAIAAEAAAACAAEAAAAIAAEAAAACAAAAAAAIAAEAAAADAAkAAAAHAAIAAAACAAsAAAAHAAIAAAACAAwAAAAHAAIAAAABAAsAAAAIAAEAAAABAAoAAAAIAAEAAAABAAkAAAAIAAEAAAABAAgAAAAIAAEAAAAAAAUAAAAIAAEAAAAAAAQAAAAIAAEAAAAAAAIAAAAIAAEAAAAAAAEAAAAIAAEAAAAAAP3/AAAFAAEAAAABAPz/AAAFAAEAAAABAP3/AAAFAAEAAAACAP3/AAAFAAEAAAADAPz/AAAFAAEAAAAEAPz/AAAFAAEAAAADAAsAAAAHAAIAAAADAAwAAAAHAAIAAAAEAAgAAAAHAAIAAAAEAAcAAAAHAAIAAAA=")
 tile_set = SubResource("TileSet_bovvr")
+script = SubResource("GDScript_b2cq8")
 
-[node name="CharacterBody2D" parent="." instance=ExtResource("2_bovvr")]
+[node name="Kiro" parent="." instance=ExtResource("2_bovvr")]

@@ -1,21 +1,75 @@
-[gd_scene load_steps=4 format=3 uid="uid://bb5fudop6p5x6"]
+[gd_scene load_steps=11 format=3 uid="uid://bb5fudop6p5x6"]
 
+[ext_resource type="Script" uid="uid://cwottasf0l3ck" path="res://scripts/characters/kiro.gd" id="1_eu4fk"]
 [ext_resource type="Texture2D" uid="uid://qm2d2fs6r4y3" path="res://assets/rogues/rogues.png" id="1_xcl36"]
+[ext_resource type="Script" uid="uid://bdr48cdl7f7s3" path="res://scripts/states/state_machine.gd" id="2_hfvxj"]
+[ext_resource type="Script" uid="uid://biouf6hscj8mf" path="res://scripts/states/idle_state.gd" id="4_ycmy7"]
+[ext_resource type="Script" uid="uid://b3hvydddmcveu" path="res://scripts/states/walk_state.gd" id="5_4rjx8"]
+[ext_resource type="Script" uid="uid://ckt7jm571l5en" path="res://scripts/player/input_player.gd" id="5_rcqon"]
+[ext_resource type="PackedScene" uid="uid://bkc3m2wldygkb" path="res://scenes/components/health_bar.tscn" id="7_5lnyy"]
+[ext_resource type="Script" uid="uid://dwbgsisstf87i" path="res://scripts/components/health_manager.gd" id="7_ujh5c"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hfvxj"]
 atlas = ExtResource("1_xcl36")
-region = Rect2(128.45459, 29.909096, 31.818176, 34.545464)
+region = Rect2(130.49904, 31.587711, 28.24826, 31.839134)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_xcl36"]
-radius = 15.0
+radius = 13.0
 
-[node name="CharacterBody2D" type="CharacterBody2D"]
+[node name="Kiro" type="CharacterBody2D" node_paths=PackedStringArray("sprite")]
+script = ExtResource("1_eu4fk")
+sprite = NodePath("Sprite2D")
+speed = 50.0
+max_health = 1400
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -13)
+scale = Vector2(0.8, 0.8)
 texture = SubResource("AtlasTexture_hfvxj")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(1, -13)
 shape = SubResource("CircleShape2D_xcl36")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(2, 2)
+position_smoothing_enabled = true
+position_smoothing_speed = 3.0
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 7.0
+target_desired_distance = 4.0
+path_postprocessing = 1
+debug_enabled = true
+debug_use_custom = true
+debug_path_custom_color = Color(0.11464252, 0.5282516, 0.79708326, 1)
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state", "input_player")]
+script = ExtResource("2_hfvxj")
+initial_state = NodePath("IdleState")
+input_player = NodePath("../InputPlayer")
+metadata/_custom_type_script = "uid://bdr48cdl7f7s3"
+
+[node name="IdleState" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("4_ycmy7")
+player = NodePath("../..")
+
+[node name="WalkState" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("5_4rjx8")
+player = NodePath("../..")
+
+[node name="InputPlayer" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("5_rcqon")
+player = NodePath("..")
+
+[node name="HealthManager" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("7_ujh5c")
+player = NodePath("..")
+
+[node name="HealthBar" parent="." node_paths=PackedStringArray("parent_sprite") instance=ExtResource("7_5lnyy")]
+offset_left = -13.0
+offset_top = -34.0
+offset_right = -13.0
+offset_bottom = -34.0
+scale = Vector2(0.25, 0.25)
+parent_sprite = NodePath("../Sprite2D")
