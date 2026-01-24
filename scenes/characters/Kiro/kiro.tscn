@@ -14,7 +14,7 @@ atlas = ExtResource("1_xcl36")
 region = Rect2(130.49904, 31.587711, 28.24826, 31.839134)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_xcl36"]
-radius = 13.0
+radius = 12.0
 
 [node name="Kiro" type="CharacterBody2D" node_paths=PackedStringArray("sprite")]
 script = ExtResource("1_eu4fk")
@@ -28,10 +28,11 @@ scale = Vector2(0.8, 0.8)
 texture = SubResource("AtlasTexture_hfvxj")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(1, -13)
+position = Vector2(1, -12)
 shape = SubResource("CircleShape2D_xcl36")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+y_sort_enabled = true
 zoom = Vector2(2, 2)
 position_smoothing_enabled = true
 position_smoothing_speed = 3.0
@@ -39,7 +40,6 @@ position_smoothing_speed = 3.0
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 path_desired_distance = 7.0
 target_desired_distance = 4.0
-path_postprocessing = 1
 debug_enabled = true
 debug_use_custom = true
 debug_path_custom_color = Color(0.11464252, 0.5282516, 0.79708326, 1)

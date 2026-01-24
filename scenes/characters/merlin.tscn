@@ -1,0 +1,74 @@
+[gd_scene load_steps=11 format=3 uid="uid://bn81214xiyxbf"]
+
+[ext_resource type="Texture2D" uid="uid://qm2d2fs6r4y3" path="res://assets/rogues/rogues.png" id="1_5857g"]
+[ext_resource type="Script" uid="uid://bdm1t4jenc2rb" path="res://scripts/characters/merlin.gd" id="1_tpa7k"]
+[ext_resource type="Script" uid="uid://bdr48cdl7f7s3" path="res://scripts/states/state_machine.gd" id="2_tpa7k"]
+[ext_resource type="Script" uid="uid://biouf6hscj8mf" path="res://scripts/states/idle_state.gd" id="3_qog7t"]
+[ext_resource type="Script" uid="uid://b3hvydddmcveu" path="res://scripts/states/walk_state.gd" id="4_txhmm"]
+[ext_resource type="Script" uid="uid://ckt7jm571l5en" path="res://scripts/player/input_player.gd" id="5_48l0l"]
+[ext_resource type="Script" uid="uid://dwbgsisstf87i" path="res://scripts/components/health_manager.gd" id="6_i8orj"]
+[ext_resource type="PackedScene" uid="uid://bkc3m2wldygkb" path="res://scenes/components/health_bar.tscn" id="7_xkdpl"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_txhmm"]
+atlas = ExtResource("1_5857g")
+region = Rect2(2.149454, 129.40172, 23.16629, 29.996185)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xcl36"]
+radius = 11.0
+
+[node name="Merlin" type="CharacterBody2D" node_paths=PackedStringArray("sprite")]
+script = ExtResource("1_tpa7k")
+sprite = NodePath("Sprite2D")
+speed = 56.0
+max_health = 1245
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-3, -11)
+scale = Vector2(0.8, 0.8)
+texture = SubResource("AtlasTexture_txhmm")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-1, -10)
+shape = SubResource("CircleShape2D_xcl36")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2, 2)
+position_smoothing_enabled = true
+position_smoothing_speed = 3.0
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 7.0
+target_desired_distance = 4.0
+debug_enabled = true
+debug_use_custom = true
+debug_path_custom_color = Color(0.11464252, 0.5282516, 0.79708326, 1)
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state", "input_player")]
+script = ExtResource("2_tpa7k")
+initial_state = NodePath("IdleState")
+input_player = NodePath("../InputPlayer")
+metadata/_custom_type_script = "uid://bdr48cdl7f7s3"
+
+[node name="IdleState" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("3_qog7t")
+player = NodePath("../..")
+
+[node name="WalkState" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("4_txhmm")
+player = NodePath("../..")
+
+[node name="InputPlayer" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("5_48l0l")
+player = NodePath("..")
+
+[node name="HealthManager" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("6_i8orj")
+player = NodePath("..")
+
+[node name="HealthBar" parent="." node_paths=PackedStringArray("parent_sprite") instance=ExtResource("7_xkdpl")]
+offset_left = -13.0
+offset_top = -34.0
+offset_right = -13.0
+offset_bottom = -34.0
+scale = Vector2(0.25, 0.25)
+parent_sprite = NodePath("../Sprite2D")
